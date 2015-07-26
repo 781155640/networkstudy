@@ -154,6 +154,71 @@ HCURSOR CnetworkstudyDlg::OnQueryDragIcon()
 }
 
 
+//-------------------------------------------------------------------------------------
+//Description:
+// This function maps a character string to a wide-character (Unicode) string
+//
+//Parameters:
+// lpcszStr: [in] Pointer to the character string to be converted
+// lpwszStr: [out] Pointer to a buffer that receives the translated string.
+// dwSize: [in] Size of the buffer
+//
+//Return Values:
+// TRUE: Succeed
+// FALSE: Failed
+//
+//Example:
+// MByteToWChar(szA,szW,sizeof(szW)/sizeof(szW[0]));
+//---------------------------------------------------------------------------------------
+BOOL MByteToWChar(LPCSTR lpcszStr, LPWSTR lpwszStr, DWORD dwSize)
+{
+	// Get the required size of the buffer that receives the Unicode
+	// string.
+	DWORD dwMinSize;
+	dwMinSize = MultiByteToWideChar (CP_ACP, 0, lpcszStr, -1, NULL, 0);
+	if(dwSize < dwMinSize)
+	{
+		return FALSE;
+	}
+
+	// Convert headers from ASCII to Unicode.
+	MultiByteToWideChar (CP_ACP, 0, lpcszStr, -1, lpwszStr, dwMinSize);  
+
+	return TRUE;
+}
+
+//-------------------------------------------------------------------------------------
+//Description:
+// This function maps a wide-character string to a new character string
+//
+//Parameters:
+// lpcwszStr: [in] Pointer to the character string to be converted
+// lpszStr: [out] Pointer to a buffer that receives the translated string.
+// dwSize: [in] Size of the buffer
+//
+//Return Values:
+// TRUE: Succeed
+// FALSE: Failed
+//
+//Example:
+// MByteToWChar(szW,szA,sizeof(szA)/sizeof(szA[0]));
+//---------------------------------------------------------------------------------------
+BOOL WCharToMByte(LPCWSTR lpcwszStr, LPSTR lpszStr, DWORD dwSize)
+{
+	memset(lpszStr,0,dwSize * sizeof(char));
+	DWORD dwMinSize;
+	dwMinSize = WideCharToMultiByte(CP_OEMCP,NULL,lpcwszStr,-1,NULL,0,NULL,FALSE);
+	if(dwSize < dwMinSize)
+	{
+		return FALSE;
+	}
+
+	WideCharToMultiByte(CP_OEMCP,NULL,lpcwszStr,-1,lpszStr,dwSize,NULL,FALSE);
+
+	return TRUE;
+}
+
+
 void CnetworkstudyDlg::OnBnClickedBtnGetaddr()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -163,9 +228,15 @@ void CnetworkstudyDlg::OnBnClickedBtnGetaddr()
 	BYTE			mac_address[6];
 	CString output;
 
+
+#define  DEVICE_NAME_LEN 128
+
 	utility::getLocalAddress((char*)&localaddr.sin_addr.s_addr, mac_address);
 
-	output.Format(_T("%s  _%x:%x:%x:%x:%x:%x"), inet_ntoa(localaddr.sin_addr),mac_address[0],mac_address[1],mac_address[2],mac_address[3],mac_address[4],mac_address[5]);
+	TCHAR sAddr[DEVICE_NAME_LEN+1];
+	MByteToWChar((char *)inet_ntoa(localaddr.sin_addr),sAddr,DEVICE_NAME_LEN+1);
+
+	output.Format(_T("%s  _%x:%x:%x:%x:%x:%x"), sAddr,mac_address[0],mac_address[1],mac_address[2],mac_address[3],mac_address[4],mac_address[5]);
 
 
 	AfxMessageBox(output);
