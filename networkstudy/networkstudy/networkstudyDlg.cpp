@@ -5,6 +5,7 @@
 #include "stdafx.h"
 #include "networkstudy.h"
 #include "networkstudyDlg.h"
+#include "utility.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -63,6 +64,7 @@ BEGIN_MESSAGE_MAP(CnetworkstudyDlg, CDialog)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	//}}AFX_MSG_MAP
+	ON_BN_CLICKED(IDC_BTN_GETADDR, &CnetworkstudyDlg::OnBnClickedBtnGetaddr)
 END_MESSAGE_MAP()
 
 
@@ -151,3 +153,23 @@ HCURSOR CnetworkstudyDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+void CnetworkstudyDlg::OnBnClickedBtnGetaddr()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//AfxMessageBox(_T("Get addr"));
+
+	SOCKADDR_IN		localaddr;
+	BYTE			mac_address[6];
+	CString output;
+
+	utility::getLocalAddress((char*)&localaddr.sin_addr.s_addr, mac_address);
+
+	output.Format(_T("%s  _%x:%x:%x:%x:%x:%x"), inet_ntoa(localaddr.sin_addr),mac_address[0],mac_address[1],mac_address[2],mac_address[3],mac_address[4],mac_address[5]);
+
+
+	AfxMessageBox(output);
+
+
+
+}
