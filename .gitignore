@@ -43,9 +43,15 @@ Temporary Items
 .apdisk
 
 # compile temp file
-.obj
-.exe
-.suo
-.aps
-.ilk
-.ncb
+*.exe
+*.suo
+*.aps
+*.ilk
+*.ncb
+*.obj
+*.dep
+*.manifest
+*.idb
+*.pch
+*.res
+*.user
